@@ -188,7 +188,6 @@ const Flex = () => {
       </View>
       <View style={[styles.subContainer,{flex: 6, borderWidth: 2,}]} >
         <View style={[styles.subContainer,{flex: 1, borderWidth: 2,}]} >
-         
           <View style={styles.listItemRow}>
             <View style={[styles.itemBox,{flex:2}]}>
               <Text style={[styles.listItemText, {fontSize: fontScale*3,fontWeight:'bold'}]}>Item</Text>
