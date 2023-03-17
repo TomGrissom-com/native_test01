@@ -15,16 +15,25 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "btTest01"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/btAppIcon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.alexbettertech.native_test01",
+      "versionCode": "3",
+      "versionName": "1.0.2"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/btAppIcon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ecfdcc5b-13d1-420b-9b1b-90542c1a5e16"
+      }
     }
   }
 }

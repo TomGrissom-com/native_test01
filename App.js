@@ -9,34 +9,14 @@ import {
   Switch,
   TextInput,
   BackHandler,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  TouchableOpacity
 } from 'react-native';
 
 
 //Gets screen size and allows for adjustments
 const { width, height } = Dimensions.get('window');
 const fontScale = Math.sqrt(width * height) / 100;
-
-const data=[
-  {
-    id: '0',
-    name: 'Can of Peaches',
-    price: '2.37',
-    taxed: false
-  },
-  {
-    id: '1',
-    name: 'Can of Potatos',
-    price: '3.68',
-    taxed: false
-  },
-  {
-    id: '2',
-    name: 'Can of Corn',
-    price: '5.28',
-    taxed: true
-  }
-]
 
 const Flex = () => {
 //general states
@@ -50,8 +30,10 @@ const Flex = () => {
 //new product states
   const [productDesc, setProductDesc] = useState('');
   const [productPrice, setProductPrice] = useState('');
-  const [taxable, setTaxable] = useState(false)
-  const [idNum, setIdNum] = useState(0)
+  const [taxable, setTaxable] = useState(false);
+  const [idNum, setIdNum] = useState(0);
+  const [budgetLimit, setBudgetLimit]=useState('');
+  const [changeBudget, setChangeBudget]=useState(false);
 
   
   useEffect(()=>{
@@ -81,10 +63,6 @@ const Flex = () => {
   }
   
 //handlers
-  const handleAddToList = ()=>{
-    setList(data)
-  }
-
   const handleAddItem =()=>{
     const itemsToAddToList={
                             id: idNum,
@@ -111,6 +89,11 @@ const Flex = () => {
     setList(updatedArray);
   };
 
+const handleSetBudget = (bl)=>{
+  setBudgetLimit(bl)
+  setChangeBudget(true)
+}
+
 //RENDER ITEMS FROM LIST
   const renderItems = ({item, index})=>(
     <View style={styles.listItemRow}>
@@ -135,18 +118,46 @@ const Flex = () => {
     </View>
   )
 
+//css variables
+  const budgetColor = Number(budgetLimit).toFixed(2)-Number(totalPrice).toFixed(2) <= 5 ? "red":"lightgreen"
+
   return (
     <View
       style={[
         styles.container,
         {
-          // Try setting `flexDirection` to `"row"`.
           flexDirection: 'column',
           minHeight: Math.round(Dimensions.get('window').height)
         },
       ]}>
-      <View style={[styles.subContainer,{flex: 1, borderWidth: 2, justifyContent: 'flex-end'}]}  >
+      <View style={[styles.subContainer,{flex: 2, borderWidth: 2, justifyContent: 'center'}]}  >
         <Text style={styles.header}>Budget As You Shop App</Text>
+        <Text style={[styles.header,{fontSize: fontScale*2}]}>By: BetterTech</Text>
+        <View style={[styles.subContainer, {flexDirection:'row'}]}>
+          <View style={[styles.subContainer,{flex: 1}]}>
+            {
+              !changeBudget ? 
+              <View style={[styles.subContainer, {flexDirection:'row'}]}>
+                <View style={[styles.subContainer, {flex:2, justifyContent:"center"}]}>
+                  <TextInput
+                  style={styles.input}
+                  onChangeText={setBudgetLimit}
+                  value={budgetLimit}
+                  placeholder="Set Budget Amount"
+                  keyboardType="numeric"
+                  />
+                </View>
+                <View style={[styles.subContainer, {flex:1, justifyContent:"center"}]}>
+                  <Button title="Set Budget" onPress={()=>handleSetBudget(budgetLimit)}/>
+                </View>
+              </View>
+            :
+            <TouchableOpacity onPress={()=>setChangeBudget(false)}>
+              <Text style={[styles.header,{color: budgetColor,fontSize: fontScale*5,fontWeight: 'bold'}]}>{`Budget: $${Number(budgetLimit-totalPrice).toFixed(2)}`}</Text>
+            </TouchableOpacity>
+            }
+          </View>
+        </View>
       </View>
       <View style={[styles.subContainer,{flex: 2, borderWidth: 2,}]} >
         <Text style={styles.header}>{`Total Taxed: $${totalTaxed.toFixed(2)}`}</Text>
