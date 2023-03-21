@@ -272,7 +272,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   container: {
-    marginTop: NotificationBarHeight,
     flex: 1, 
     backgroundColor: 'rgba(255, 255, 255, 1)'
   },
