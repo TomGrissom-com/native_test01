@@ -253,8 +253,15 @@ const Flex = () => {
               keyExtractor={(list, index) => index.toString()}/>
           </View>
         </View>
-        <View style={styles.btads}>
-          <TouchableOpacity onPress={()=>{Linking.openURL("https://www.bettertechsol.com/")}}>
+        <View  
+          style={styles.btads}
+        >
+          <TouchableOpacity
+            accessible={true}
+            accessibilityLabel="Link to BetterTech webiste"
+            accessibilityHint="navigates to BetterTech website"
+            onPress={()=>{Linking.openURL("https://www.bettertechsol.com/")}}
+          >
             <Image source={require('./assets/btbanner.png')} style={styles.image} />
           </TouchableOpacity>
         </View>
