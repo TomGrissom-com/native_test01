@@ -36,6 +36,7 @@ const Flex = () => {
 //new product states
   const [productDesc, setProductDesc] = useState('');
   const [productPrice, setProductPrice] = useState('');
+  const [productQuantity, setProductQuantity] = useState(1);
   const [taxable, setTaxable] = useState(false);
   const [idNum, setIdNum] = useState(0);
   const [budgetLimit, setBudgetLimit]=useState('');
@@ -69,26 +70,31 @@ const Flex = () => {
   }
   
 //handlers
-  const handleAddItem =()=>{
-    const itemsToAddToList={
-                            id: idNum,
-                            name: productDesc,
-                            price: productPrice,
-                            taxed: taxable
-                          }
-                          
-    
-    if(productPrice.trim() !== ""){
-      setList([...list, itemsToAddToList])
-      setTaxable(false)
-      setProductDesc('')
-      setProductPrice('')
-      setIdNum(idNum + 1) 
-      {!productDesc ? ToastAndroid.show('Not Required But We Recomend Adding A Description', ToastAndroid.LONG):""}                          
-    
-      ToastAndroid.show('Product Added', ToastAndroid.SHORT)
-    
-    }else{ alert("Product Price Required")}
+  const handleAddItem = () => {
+    const totalItemPrice = parseFloat(productPrice) * parseInt(productQuantity);
+
+    const itemsToAddToList = {
+      id: idNum,
+      name: productDesc,
+      price: totalItemPrice, // Now this represents the total price of the product
+      quantity: productQuantity, // Optionally, store the quantity as well
+      taxed: taxable
+    }
+
+    if (productPrice.trim() !== "" && productQuantity > 0) {
+      setList([...list, itemsToAddToList]);
+      setTaxable(false);
+      setProductDesc('');
+      setProductPrice('');
+      setProductQuantity(1); // Resetting the quantity to 1 for the next item
+      setIdNum(idNum + 1);
+
+      {!productDesc ? ToastAndroid.show('Not Required But We Recommend Adding A Description', ToastAndroid.LONG) : ""}
+      ToastAndroid.show('Product Added', ToastAndroid.SHORT);
+
+    } else {
+      alert("Product Price and Quantity are Required");
+    }
   }
  const handleDeleteItem = (id)=>{
   const filteredItems = list.filter((item) => item.id !== id);
@@ -214,6 +220,13 @@ const Flex = () => {
               onChangeText={setProductPrice}
               value={productPrice}
               placeholder="Product Price"
+              keyboardType="numeric"
+              />
+              <TextInput
+              style={styles.input}
+              onChangeText={setProductQuantity}
+              value={productQuantity}
+              placeholder="Quantity"
               keyboardType="numeric"
               />
             </View>
