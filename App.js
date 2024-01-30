@@ -1,4 +1,5 @@
 import React, {useState, useEffect } from 'react';
+import VersionCheck from 'react-native-version-check';
 import {
   StyleSheet,
   View,
@@ -17,6 +18,22 @@ import {
   Image,
   Linking
 } from 'react-native';
+
+//check for version updates
+VersionCheck.needUpdate()
+    .then(async res => {
+      if (res.isNeeded) {
+        // Alert the user about the update
+        Alert.alert(
+          'Update available',
+          'There is a new version available on the Play Store. Would you like to update?',
+          [
+            {text: 'Update', onPress: () => VersionCheck.goToStore()},
+          ],
+          { cancelable: true }
+        );
+      }
+    });
 
 
 //Gets screen size and allows for adjustments
