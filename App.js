@@ -122,7 +122,7 @@ const renderItems = ({ item, index }) => (
       <View style={[styles.itemBox, {flex:2, alignItems:'flex-start'}]}>
         <Text style={[styles.listItemText]}>${item.taxed === true ? Number((item.price * 1.0825).toFixed(2)) : item.price}</Text>
       </View>
-      <View style={[styles.itemBox, { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[styles.itemBox, {zIndex:2, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }]}>
         <TouchableOpacity onPress={() => handleDecrementQuantity(index)} style={styles.quantityButton}>
           <Text style={styles.buttonText}>-</Text>
         </TouchableOpacity>
@@ -131,7 +131,8 @@ const renderItems = ({ item, index }) => (
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
-      <View style={[styles.itemBox, { alignItems: 'center', flex: 1}]}>
+      <View style={[styles.itemBox]}>
+        <Text>Tax?</Text>
         <Switch
           trackColor={{ false: '#767577', true: '#81b0ff' }}
           thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
@@ -375,6 +376,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: borderCol,
     borderWidth: borderWidth,
+    zIndex:1,
+  },
+  itemBox2:{
+    flex: 1,
+    margin: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: borderCol,
+    borderWidth: borderWidth,
   },
   listItemText: {
     color: "black",
@@ -414,7 +424,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    zIndex: 1
   },
   quantityButton: {
     backgroundColor: '#81b0ff',  // Choose a background color for the button
@@ -425,6 +434,8 @@ const styles = StyleSheet.create({
     width: 40,                     // Width of the button
     height: 40,                    // Height of the button
     marginHorizontal: 10,          // Space around the button
+    borderColor: borderCol,
+    borderWidth: borderWidth,
   },
   buttonText: {
     color: "black",
