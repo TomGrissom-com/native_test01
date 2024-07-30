@@ -1,5 +1,4 @@
 import React, {useState, useEffect } from 'react';
-import VersionCheck from 'react-native-version-check';
 import {
   StyleSheet,
   View,
@@ -19,22 +18,6 @@ import {
   Linking
 } from 'react-native';
 
-//check for version updates
-VersionCheck.needUpdate()
-    .then(async res => {
-      if (res.isNeeded) {
-        // Alert the user about the update
-        Alert.alert(
-          'Update available',
-          'There is a new version available on the Play Store. Would you like to update?',
-          [
-            {text: 'Update', onPress: () => VersionCheck.goToStore()},
-          ],
-          { cancelable: true }
-        );
-      }
-    });
-
 
 //Gets screen size and allows for adjustments
 const { width, height } = Dimensions.get('window');
@@ -53,7 +36,7 @@ const Flex = () => {
 //new product states
   const [productDesc, setProductDesc] = useState('');
   const [productPrice, setProductPrice] = useState('');
-  const [productQuantity, setProductQuantity] = useState('');
+  const [productQuantity, setProductQuantity] = useState(1);
   const [taxable, setTaxable] = useState(false);
   const [idNum, setIdNum] = useState(0);
   const [budgetLimit, setBudgetLimit]=useState('');
@@ -95,8 +78,7 @@ const Flex = () => {
       name: productDesc,
       price: totalItemPrice, // Now this represents the total price of the product
       quantity: productQuantity, // Optionally, store the quantity as well
-      taxed: taxable,
-      unitPrice: parseFloat(productPrice),
+      taxed: taxable
     }
 
     if (productPrice.trim() !== "" && productQuantity > 0) {
@@ -117,12 +99,13 @@ const Flex = () => {
  const handleDeleteItem = (id)=>{
   const filteredItems = list.filter((item) => item.id !== id);
     setList(filteredItems);
-  }
+ }
   const handleSwitchChange = index => {
     const updatedArray = [...list];
     updatedArray[index].taxed = !updatedArray[index].taxed;
     setList(updatedArray);
   };
+
   const handleSetBudget = (bl)=>{
     ToastAndroid.show('Tap Blue Text To Change Budget', ToastAndroid.SHORT);
     setBudgetLimit(bl)
@@ -130,64 +113,28 @@ const Flex = () => {
   }
   
 //RENDER ITEMS FROM LIST
-const renderItems = ({ item, index }) => (
-  <View style={[{borderBottomColor:"gray", borderBottomWidth:1}]}>
+  const renderItems = ({item, index})=>(
     <View style={styles.listItemRow}>
-      <Text style={styles.listItemText}>{item.name}</Text>
-    </View>
-    <View style={styles.listItemRow}>
-      <View style={[styles.itemBox, {flex:2, alignItems:'flex-start'}]}>
-        <Text style={[styles.listItemText]}>${item.taxed === true ? Number((item.price * 1.0825).toFixed(2)) : item.price}</Text>
-      </View>
-      <View style={[styles.itemBox, {zIndex:2, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }]}>
-        <TouchableOpacity onPress={() => handleDecrementQuantity(index)} style={styles.quantityButton}>
-          <Text style={styles.buttonText}>-</Text>
-        </TouchableOpacity>
-        <Text style={styles.quantityText}>{item.quantity}</Text>
-        <TouchableOpacity onPress={() => handleIncrementQuantity(index)} style={styles.quantityButton}>
-          <Text style={styles.buttonText}>+</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={[styles.itemBox]}>
-        <Text>Tax?</Text>
+      <View style={[styles.itemBox, {flex:2}]}>
+        <Text style={styles.listItemText}>{item.name}</Text>
+      </View>     
+      <View style={[styles.itemBox, {flex:2, alignItems: 'center'}]}>
+          <Text numberOfLines={1} ellipsizeMode='tail'  style={styles.listItemText}>${item.taxed === true ? Number((item.price * 1.0825).toFixed(2)):item.price}</Text>
+      </View>      
+      <View style={[styles.itemBox, {alignItems: 'center'}]}>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          trackColor={{false: '#767577', true: '#81b0ff'}}
           thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={() => handleSwitchChange(index)}
+          onValueChange={()=>handleSwitchChange(index)}
           value={item.taxed}
         />
       </View>
-      <View style={[styles.itemBox, { alignItems: 'center' }]}>
-        <Button style={styles.button} textStyle={styles.buttonText} title="DELETE" onPress={() => handleDeleteItem(item.id)} />
+      <View style={[styles.itemBox, {flex:2, alignItems: 'center'}]}>
+        <Button style={styles.button} textStyle={styles.buttonText} title="DELETE" onPress={()=>handleDeleteItem(item.id)}/>
       </View>
     </View>
-  </View>
-);
-
-const handleIncrementQuantity = (index) => {
-  const updatedList = [...list];
-  // Ensure the quantity is treated as a number
-  updatedList[index].quantity = parseInt(updatedList[index].quantity, 10) + 1;
-  updatedList[index].price = updatedList[index].quantity * updatedList[index].unitPrice;
-  setList(updatedList);
-  // Update total price and other related states
-};
-
-const handleDecrementQuantity = (index) => {
-  const updatedList = [...list];
-  // Convert quantity to an integer before comparing and decrementing
-  const currentQuantity = parseInt(updatedList[index].quantity, 10);
-
-  if (currentQuantity > 1) {
-    updatedList[index].quantity = currentQuantity - 1;
-    updatedList[index].price = updatedList[index].quantity * updatedList[index].unitPrice;
-    setList(updatedList);
-    // Update total price and other related states
-  }
-};
-
-
+  )
 
 //css variables
   const budgetColor = 
@@ -210,9 +157,18 @@ const handleDecrementQuantity = (index) => {
             minHeight: Math.round(Dimensions.get('window').height)
           },
         ]}>
-        <View style={[styles.subContainer,{flex: 2, justifyContent: 'center'}]}  >
-          <Text style={styles.header}>Budget As You Shop</Text>
-          <Text style={[styles.header,{fontSize: fontScale*2}]}>By: BetterTech</Text>
+        <View style={[styles.subContainer,{flex: 2, justifyContent: 'center', paddingTop:"8%"}]}  >
+            {
+              !changeBudget?
+              <>
+                <Text style={styles.header}>Budget As You Shop</Text>
+                <Text style={[styles.header,{fontSize: fontScale*2, fontStyle:"italic"}]}>Add Budget Amount, Press Set Budget</Text>
+              </>
+              :
+              <>
+                <Text style={[styles.header,{fontSize: fontScale*2, fontStyle:"italic"}]}>Tap To Change</Text>
+              </>
+            }
           <View style={[styles.innerSubContainer, {flexDirection:'row'}]}>
             <View style={[styles.innerSubContainer,{flex: 1}]}>
               {
@@ -222,7 +178,7 @@ const handleDecrementQuantity = (index) => {
                     <TextInput
                     style={styles.input}
                     onChangeText={setBudgetLimit}
-                    value={budgetLimit.toString()}
+                    value={budgetLimit}
                     placeholder="Set Budget Amount"
                     keyboardType="numeric"
                     />
@@ -259,37 +215,29 @@ const handleDecrementQuantity = (index) => {
         <View style={[styles.subContainer,{flex: 2.5, marginBottom:5,marginTop:5}]} >
           <View style={styles.innerSubContainer}>
             <TextInput
-            style={[styles.input, {height: "40px"}]}
+            style={styles.input}
             onChangeText={setProductDesc}
-            value={productDesc.toString()}
+            value={productDesc}
             placeholder="Product Description"
             keyboardType="default"
             />
           </View>
           <View style={[styles.innerSubContainer, {flexDirection:'row'}]}>
             <View style={[styles.innerSubContainer,{flex: 2}]}>
-              <View style={[styles.innerContainer, {flexDirection:'row'}]}>
-                <Text style={[styles.text]}>Price</Text>
-                <TextInput
-                style={[styles.input, {flex:1}]}
-                onChangeText={setProductPrice}
-                value={productPrice.toString()}
-                placeholder="Price"
-                keyboardType="numeric"
-                />
-              </View>
-
-              <View style={[styles.innerContainer, {flexDirection:'row'}]}>
-                <Text style={[styles.text]}>Quantity</Text>
-                <TextInput
-                style={[styles.input, {flex:1}]}
-                onChangeText={setProductQuantity}
-                value={productQuantity.toString()}
-                placeholder="Quantity"
-                keyboardType="numeric"
-                />
-              </View> 
-            
+              <TextInput
+              style={styles.input}
+              onChangeText={setProductPrice}
+              value={productPrice}
+              placeholder="Product Price"
+              keyboardType="numeric"
+              />
+              <TextInput
+              style={styles.input}
+              onChangeText={setProductQuantity}
+              value={productQuantity}
+              placeholder="Quantity"
+              keyboardType="numeric"
+              />
             </View>
             <View style={[styles.innerSubContainer,{flex: 1, alignItems:"center"}]}>
               <Text style={styles.text}>Taxable</Text>
@@ -306,7 +254,20 @@ const handleDecrementQuantity = (index) => {
         </View>
         <View style={[styles.subContainer,{flex: 6}]} >
           <View style={[styles.innerSubContainer,{flex: 1, marginTop:5, backgroundColor:'lightgray', borderBottomRightRadius:10, borderBottomLeftRadius: 10}]} >
-
+            <View style={styles.listItemRow}>
+              <View style={[styles.itemBox,{flex:2}]}>
+                <Text style={[styles.listItemText, {fontSize: fontScale*3,fontWeight:'bold'}]}>Item</Text>
+              </View>
+              <View style={[styles.itemBox, {flex:2, alignItems: 'center'}]}>
+                <Text style={[styles.listItemText, {fontSize: fontScale*3,fontWeight:'bold'}]}>Price</Text>
+              </View>
+              <View style={[styles.itemBox, {alignItems: 'center'}]}>
+                <Text style={[styles.listItemText, {fontSize: fontScale*3,fontWeight:'bold'}]}>Tax?</Text>
+              </View>
+              <View style={[styles.itemBox, {flex:2, alignItems: 'center'}]}>
+                <Text style={[styles.listItemText, {fontSize: fontScale*3,fontWeight:'bold'}]}>Delete?</Text>
+              </View>
+            </View>
             <FlatList
               style={styles.list}
               data={list}
@@ -356,14 +317,6 @@ const styles = StyleSheet.create({
     margin:0,
     justifyContent:'center'
   },
-  innerContainer:{
-    flexDirection: 'row',
-    borderColor: borderCol,
-    borderWidth: borderWidth,
-    margin:0,
-    justifyContent:'left',
-    alignItems:'center'
-  },
   header:{
     textAlign: 'center',
     fontSize: fontScale*4,
@@ -377,40 +330,20 @@ const styles = StyleSheet.create({
   list: {
     color: "black",
     flex: 1,
-    marginTop: '5px',
+    marginTop: 20
   },
   listItemRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: 5,
-    paddingBottom:0,
+    justifyContent: 'flex-start'
   },
   itemBox:{
     flex: 1,
-    margin: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: borderCol,
-    borderWidth: borderWidth,
-    zIndex:1,
-  },
-  itemBox2:{
-    flex: 1,
-    margin: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: borderCol,
-    borderWidth: borderWidth,
+    margin: 5,
   },
   listItemText: {
     color: "black",
-    fontSize: fontScale * 4,
-    padding: 1, // Add padding for a better look
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    borderColor: borderCol,
-    borderWidth: borderWidth,
+    fontSize: fontScale*4,
+    marginBottom: 10
   },
   input:{
     height: 40,
@@ -441,26 +374,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-  },
-  quantityButton: {
-    backgroundColor: '#81b0ff',  // Choose a background color for the button
-    padding: 0,                   // Adjust padding to change the size of the button
-    borderRadius: 20,              // Half of width and height to make it circular
-    justifyContent: 'center',      // Center content horizontally
-    alignItems: 'center',          // Center content vertically
-    width: 40,                     // Width of the button
-    height: 40,                    // Height of the button
-    marginHorizontal: 10,          // Space around the button
-    borderColor: borderCol,
-    borderWidth: borderWidth,
-  },
-  buttonText: {
-    color: "black",
-    fontSize: fontScale * 4,
-    marginHorizontal: 10, // Add horizontal spacing
-  },
-  quantityText:{
-    fontSize: fontScale * 4,
+    zIndex: 1
   },
 });
 

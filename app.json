@@ -1,5 +1,6 @@
 {
   "expo": {
+    "sdkVersion": "51.0.0",
     "name": "Budget While You Shop",
     "slug": "native_test01",
     "version": "1.0.0",
@@ -19,6 +20,7 @@
       "bundleIdentifier": "btTest01"
     },
     "android": {
+      "targetSdkVersion": 34,
       "icon": "./assets/btAppIcon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/btAppIcon.png",
@@ -31,7 +33,7 @@
         "image": "./assets/btAppIcon.png"
       },
       "package": "com.alexbettertech.native_test01",
-      "versionCode": "6",
+      "versionCode": "7",
       "versionName": "1.0.4"
     },
     "web": {
